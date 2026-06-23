@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #050810;
+    --surface: #0d1117;
+    --card: #0f1724;
+    --border: #1e2d42;
+    --cyan: #00f5ff;
+    --purple: #a855f7;
+    --pink: #f472b6;
+    --green: #00ff88;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow-cyan: 0 0 20px #00f5ff55, 0 0 40px #00f5ff22;
+    --glow-purple: 0 0 20px #a855f755, 0 0 40px #a855f722;
+    --glow-pink: 0 0 20px #f472b655, 0 0 40px #f472b622;
+    --glow-green: 0 0 20px #00ff8855, 0 0 40px #00ff8822;
+  }
+
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(5,8,16,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem; color: var(--cyan);
+    letter-spacing: 2px; opacity: 0;
+    transition: opacity .4s;
+    text-shadow: var(--glow-cyan);
+  }
+  .logo.visible { opacity: 1; }
+
+  .nav-links { display: flex; gap: 8px; }
+
+  .nav-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 8px 18px; border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .3s;
+    position: relative; overflow: hidden;
+  }
+  .nav-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--cyan)15, var(--purple)15);
+    opacity: 0; transition: opacity .3s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    color: var(--cyan); border-color: var(--cyan);
+    box-shadow: var(--glow-cyan);
+    transform: translateY(-2px);
+  }
+  .nav-btn:hover::before, .nav-btn.active::before { opacity: 1; }
+
+  /* ── PAGES CONTAINER ── */
+  .pages-wrap {
+    display: flex; width: 700vw; height: 100vh;
+    transform: translateX(0);
+    transition: transform .8s cubic-bezier(.77,0,.175,1);
+  }
+
+  .page {
+    width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; position: relative;
+    padding: 80px 48px 40px;
+    overflow: hidden;
+  }
+
+  /* ── GRID BG ── */
+  .page::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Radial glow per page */
+  #p-home::after   { content:''; position:absolute; inset:0; background: radial-gradient(circle at 60% 50%, #00f5ff18 0%, transparent 60%); pointer-events:none; }
+  #p-about::after  { content:''; position:absolute; inset:0; background: radial-gradient(circle at 40% 50%, #a855f718 0%, transparent 60%); pointer-events:none; }
+  #p-edu::after    { content:''; position:absolute; inset:0; background: radial-gradient(circle at 60% 50%, #f472b618 0%, transparent 60%); pointer-events:none; }
+  #p-skills::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 40% 50%, #00ff8818 0%, transparent 60%); pointer-events:none; }
+  #p-projects::after{content:''; position:absolute; inset:0; background: radial-gradient(circle at 60% 50%, #a855f718 0%, transparent 60%); pointer-events:none; }
+  #p-contact::after{ content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 50%, #00f5ff18 0%, transparent 60%); pointer-events:none; }
+
+  /* ── HOME ── */
+  .home-inner { z-index:1; text-align:center; }
+
+  #name-display {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(3rem, 8vw, 7rem);
+    letter-spacing: 12px;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    min-height: 1.2em;
+    display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: letterIn .08s forwards;
+  }
+  @keyframes letterIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .home-sub {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; color: var(--muted);
+    letter-spacing: 4px; margin-top: 16px;
+    opacity: 0; transition: opacity .6s;
+  }
+  .home-sub.show { opacity: 1; }
+
+  .home-cta {
+    margin-top: 40px; display: flex; gap: 16px; justify-content: center;
+    opacity: 0; transition: opacity .6s .3s;
+  }
+  .home-cta.show { opacity: 1; }
+
+  /* ── FLOATING GLOW BUTTONS ── */
+  .glow-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: .8rem; letter-spacing: 2px;
+    text-transform: uppercase; text-decoration: none;
+    padding: 14px 28px; border-radius: 8px;
+    border: 1px solid; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all .3s; position: relative;
+    animation: float 3s ease-in-out infinite;
+  }
+  .glow-btn:nth-child(2) { animation-delay: .5s; }
+  .glow-btn:nth-child(3) { animation-delay: 1s; }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  .glow-btn.cyan  { color: var(--cyan);   border-color: var(--cyan);   background: #00f5ff0d; }
+  .glow-btn.purple{ color: var(--purple); border-color: var(--purple); background: #a855f70d; }
+  .glow-btn.pink  { color: var(--pink);   border-color: var(--pink);   background: #f472b60d; }
+  .glow-btn.green { color: var(--green);  border-color: var(--green);  background: #00ff880d; }
+
+  .glow-btn.cyan:hover   { box-shadow: var(--glow-cyan);   transform: translateY(-12px) scale(1.04); background: #00f5ff1a; }
+  .glow-btn.purple:hover { box-shadow: var(--glow-purple); transform: translateY(-12px) scale(1.04); background: #a855f71a; }
+  .glow-btn.pink:hover   { box-shadow: var(--glow-pink);   transform: translateY(-12px) scale(1.04); background: #f472b61a; }
+  .glow-btn.green:hover  { box-shadow: var(--glow-green);  transform: translateY(-12px) scale(1.04); background: #00ff881a; }
+
+  /* ── SECTION TITLE ── */
+  .sec-title {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700; letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+  .sec-line {
+    width: 60px; height: 3px; border-radius: 2px;
+    margin-bottom: 40px;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1.6fr;
+    gap: 60px; align-items: center; z-index:1; max-width: 960px; width:100%;
+  }
+  .avatar-wrap {
+    position: relative; display: flex; justify-content: center;
+  }
+  .avatar-ring {
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 2px solid var(--purple);
+    box-shadow: var(--glow-purple);
+    display: flex; align-items: center; justify-content: center;
+    animation: float 4s ease-in-out infinite;
+    background: var(--card);
+    font-size: 5rem;
+  }
+  .about-text p {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem; line-height: 1.8;
+    color: var(--muted); margin-bottom: 16px;
+  }
+  .about-text p span { color: var(--text); }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; letter-spacing: 1px;
+    padding: 5px 12px; border-radius: 4px;
+    border: 1px solid var(--border); color: var(--cyan);
+    background: #00f5ff08;
+  }
+
+  /* ── EDUCATION ── */
+  .edu-list { z-index:1; max-width: 760px; width:100%; }
+  .edu-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px 32px;
+    margin-bottom: 20px; position: relative;
+    transition: all .3s;
+  }
+  .edu-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 3px 0 0 3px;
+    background: linear-gradient(to bottom, var(--pink), var(--purple));
+  }
+  .edu-card:hover {
+    border-color: var(--pink);
+    box-shadow: var(--glow-pink);
+    transform: translateX(6px);
+  }
+  .edu-year {
+    font-family: 'Space Mono', monospace;
+    font-size: .72rem; color: var(--pink);
+    letter-spacing: 2px; margin-bottom: 6px;
+  }
+  .edu-degree {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; font-weight: 600;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .edu-school { font-family: 'Space Grotesk', sans-serif; color: var(--muted); font-size: .9rem; }
+
+  /* ── SKILLS ── */
+  .skills-grid { z-index:1; max-width: 880px; width:100%; }
+  .skills-cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .skill-cat {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    transition: all .3s;
+  }
+  .skill-cat:hover { border-color: var(--green); box-shadow: var(--glow-green); }
+  .skill-cat-name {
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem; letter-spacing: 2px;
+    color: var(--green); margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .skill-pill {
+    display: inline-block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .82rem; color: var(--text);
+    background: #ffffff08; border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px;
+    margin: 4px 4px 0 0;
+    transition: all .25s;
+  }
+  .skill-pill:hover { background: #00ff880d; border-color: var(--green); color: var(--green); }
+
+  /* ── PROJECTS ── */
+  .projects-grid { z-index:1; max-width: 960px; width:100%; }
+  .proj-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .proj-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 26px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: all .35s; cursor: pointer;
+  }
+  .proj-card:hover {
+    border-color: var(--cyan);
+    box-shadow: var(--glow-cyan);
+    transform: translateY(-6px);
+  }
+  .proj-icon { font-size: 2rem; }
+  .proj-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 1rem; color: var(--text);
+  }
+  .proj-desc {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .85rem; color: var(--muted); line-height: 1.6; flex:1;
+  }
+  .proj-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+  .proj-tech span {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; color: var(--cyan);
+    background: #00f5ff0d; border: 1px solid #00f5ff22;
+    border-radius: 3px; padding: 3px 8px;
+  }
+
+  /* ── CONTACT ── */
+  .contact-inner { z-index:1; text-align:center; max-width: 600px; width:100%; }
+  .contact-inner p {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--muted); font-size: 1.05rem;
+    line-height: 1.7; margin-bottom: 40px;
+  }
+  .contact-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── PARTICLES ── */
+  .particles { position: fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .particle {
+    position: absolute; border-radius: 50%;
+    animation: drift linear infinite;
+  }
+  @keyframes drift {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* ── CORNER NAME ── */
+  #corner-name {
+    position: fixed; bottom: 20px; left: 28px; z-index: 200;
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem; letter-spacing: 3px;
+    color: var(--cyan); opacity: 0;
+    transition: opacity .5s;
+    text-shadow: var(--glow-cyan);
+    pointer-events: none;
+  }
+  #corner-name.visible { opacity: 1; }
+
+  /* ── PAGE INDICATOR ── */
+  .page-dots {
+    position: fixed; bottom: 28px; right: 40px; z-index: 200;
+    display: flex; gap: 8px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border); transition: all .3s; cursor: pointer;
+  }
+  .dot.active { background: var(--cyan); box-shadow: var(--glow-cyan); transform: scale(1.4); }
+
+  /* scrollable content */
+  .page-scroll { max-height: calc(100vh - 100px); overflow-y: auto; width: 100%; }
+  .page-scroll::-webkit-scrollbar { width: 3px; }
+  .page-scroll::-webkit-scrollbar-track { background: transparent; }
+  .page-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── EMAIL TOOLTIP ── */
+  .email-wrap { position: relative; display: inline-block; }
+
+  .email-tooltip {
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%; transform: translateX(-50%) translateY(6px);
+    background: #0d1117;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 10px 18px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    box-shadow: 0 0 18px #00ff8833, 0 0 40px #00ff8811;
+    z-index: 999;
+  }
+
+  .email-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%; transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: var(--green);
+  }
+
+  .email-tooltip .tip-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem; letter-spacing: 2px;
+    color: var(--green); text-transform: uppercase;
+    margin-bottom: 4px; opacity: .7;
+  }
+
+  .email-tooltip .tip-email {
+    font-family: 'Space Mono', monospace;
+    font-size: .85rem; color: var(--text);
+    letter-spacing: 1px;
+  }
+
+  .email-tooltip .tip-copy {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .7rem; color: var(--muted);
+    margin-top: 4px; text-align: center;
+  }
+
+  .email-wrap:hover .email-tooltip,
+  .email-tooltip.pinned {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .tip-copied {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; color: var(--green);
+    margin-top: 4px; text-align: center;
+    opacity: 0; transition: opacity .3s;
+  }
+  .tip-copied.show { opacity: 1; }
+
+  /* ── CONTACT FULL LAYOUT ── */
+  .contact-full {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 48px; align-items: start;
+    z-index: 1; max-width: 1000px; width: 100%;
+    max-height: calc(100vh - 100px); overflow-y: auto;
+  }
+  .contact-full::-webkit-scrollbar { width: 3px; }
+  .contact-full::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .contact-desc {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--muted); font-size: .95rem;
+    line-height: 1.7; margin-bottom: 28px;
+  }
+
+  .info-items { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+  .info-item {
+    display: flex; align-items: center; gap: 14px;
+    position: relative;
+  }
+  .info-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .info-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 2px;
+  }
+  .info-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .95rem; color: var(--text);
+  }
+
+  /* reposition tooltip for inline email */
+  .info-item .email-wrap { display: flex; align-items: center; gap: 14px; }
+  .info-item .email-tooltip {
+    left: 100%; top: 50%; transform: translateY(-50%) translateX(8px);
+    bottom: auto;
+  }
+  .info-item .email-tooltip::after {
+    top: 50%; left: -14px; transform: translateY(-50%);
+    border-top-color: transparent;
+    border-right-color: var(--green);
+  }
+  .info-item .email-wrap:hover .email-tooltip {
+    transform: translateY(-50%) translateX(14px);
+  }
+
+  .social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ── CONTACT FORM CARD ── */
+  .cf-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px;
+    box-shadow: 0 0 40px #00f5ff08;
+  }
+
+  .cf-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem; letter-spacing: 2px;
+    color: var(--cyan); margin-bottom: 24px;
+    text-transform: uppercase;
+    text-shadow: var(--glow-cyan);
+  }
+
+  .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .cf-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+
+  .cf-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; letter-spacing: 1.5px;
+    color: var(--muted); text-transform: uppercase;
+  }
+
+  .cf-input {
+    background: #0a0f1a; border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .92rem; color: var(--text);
+    outline: none; transition: border-color .25s, box-shadow .25s;
+    width: 100%;
+  }
+  .cf-input::placeholder { color: var(--muted); opacity: .6; }
+  .cf-input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px #00f5ff12;
+  }
+  .cf-input.error { border-color: #f87171; box-shadow: 0 0 0 3px #f8717118; }
+
+  .cf-textarea { resize: vertical; min-height: 110px; }
+
+  .cf-err {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .75rem; color: #f87171;
+    min-height: 16px;
+  }
+
+  .cf-submit {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #00f5ff18, #a855f718);
+    border: 1px solid var(--cyan);
+    border-radius: 8px; color: var(--cyan);
+    font-family: 'Space Mono', monospace;
+    font-size: .82rem; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .3s; margin-top: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cf-submit:hover {
+    background: linear-gradient(135deg, #00f5ff28, #a855f728);
+    box-shadow: var(--glow-cyan); transform: translateY(-2px);
+  }
+  .cf-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .cf-spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid #00f5ff44; border-top-color: var(--cyan);
+    border-radius: 50%; animation: spin .7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .cf-success {
+    display: none; align-items: center; gap: 14px;
+    background: #00ff880d; border: 1px solid var(--green);
+    border-radius: 8px; padding: 16px;
+    margin-top: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .cf-success span { font-size: 1.8rem; }
+  .cf-success strong { color: var(--green); display: block; margin-bottom: 2px; }
+  .cf-success p { color: var(--muted); font-size: .85rem; margin: 0; }
+  .cf-success.show { display: flex; }
+
+  .cf-note {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .72rem; color: var(--muted);
+    margin-top: 16px; text-align: center; line-height: 1.6;
+    border-top: 1px solid var(--border); padding-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Corner name (appears after intro) -->
+<div id="corner-name">KABIL.DEV</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" id="logo">KABIL.DEV</div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="goTo(0)">Home</button>
+    <button class="nav-btn" onclick="goTo(1)">About</button>
+    <button class="nav-btn" onclick="goTo(2)">Education</button>
+    <button class="nav-btn" onclick="goTo(3)">Skills</button>
+    <button class="nav-btn" onclick="goTo(4)">Projects</button>
+    <button class="nav-btn" onclick="goTo(5)">Contact</button>
+  </div>
+</nav>
+
+<!-- PAGES -->
+<div class="pages-wrap" id="pages">
+
+  <!-- HOME -->
+  <div class="page" id="p-home">
+    <div class="home-inner">
+      <div id="name-display"></div>
+      <p class="home-sub" id="home-sub">FULL STACK DEVELOPER &nbsp;·&nbsp; UI/UX DESIGNER &nbsp;·&nbsp; OPEN SOURCE</p>
+      <div class="home-cta" id="home-cta">
+        <button class="glow-btn cyan" onclick="goTo(4)">&#9654; View Work</button>
+        <button class="glow-btn purple" onclick="goTo(1)">&#10022; About Me</button>
+        <button class="glow-btn pink" onclick="goTo(5)">&#9993; Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="page" id="p-about">
+    <div class="about-grid z-1">
+      <div class="avatar-wrap">
+        <div class="avatar-ring">👨‍💻</div>
+      </div>
+      <div class="about-text">
+        <div class="sec-title" style="color:var(--purple)">About Me</div>
+        <div class="sec-line" style="background:linear-gradient(90deg,var(--purple),var(--pink))"></div>
+        <p>Hey! I'm <span>KABILAN</span>, 🎓 3rd-Year CSE Student – Passionate about programming, software development, and web technologies.</p>
+        <p>☕ Java & Full Stack Developer – Experienced in Java and Full Stack Development, with knowledge of building responsive web applications.</p>
+        <p>Currently seeking <span>internship opportunities</span> and eager to work on <span>real-world projects</span>.</p>
+        <div class="tag-row">
+          <span class="tag">Java</span><span class="tag">HTML</span><span class="tag">CSS</span>
+          <span class="tag">JS</span><span class="tag">Mongo Db</span><span class="tag">Python</span>
+          <span class="tag">Figma</span><span class="tag">MYSQL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="page" id="p-edu">
+    <div class="edu-list">
+      <div class="sec-title" style="color:var(--pink)">Education</div>
+      <div class="sec-line" style="background:linear-gradient(90deg,var(--pink),var(--purple))"></div>
+      <div class="edu-card">
+        <div class="edu-year">2024 – 2028</div>
+        <div class="edu-degree">B.E. Computer Science & Engineering(PRESENT)</div>
+        <div class="edu-school">PSVPEC-Prince Shri Venkateshwara Padmavathy Engineering College· CGPA 7.4/10.0</div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-year">2026 – Completed</div>
+        <div class="edu-degree">Full Stack Development Certification</div>
+        <div class="edu-school">IBM Organization</div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="page" id="p-skills">
+    <div class="skills-grid">
+      <div class="sec-title" style="color:var(--green)">Skills</div>
+      <div class="sec-line" style="background:linear-gradient(90deg,var(--green),var(--cyan))"></div>
+      <div class="skills-cats">
+        <div class="skill-cat">
+          <div class="skill-cat-name">Frontend</div>
+          <span class="skill-pill">HTML</span><span class="skill-pill">CSS</span>
+          <span class="skill-pill">JS</span>
+          <span class="skill-pill">Figma</span>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-name">Backend</div>
+          <span class="skill-pill">Java</span><span class="skill-pill">Python</span>
+          <span class="skill-pill">SQL</span><span class="skill-pill">Mongo Db</span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="page" id="p-projects">
+    <div class="projects-grid">
+      <div class="sec-title" style="color:var(--cyan)">Projects</div>
+      <div class="sec-line" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div>
+      <div class="proj-cards">
+        <div class="proj-card">
+          <div class="proj-icon">🧮</div>
+          <div class="proj-name">Simple calculator</div>
+          <div class="proj-desc">Built a simple calculator web application using HTML, CSS, and JavaScript.It performs basic arithmetic operations such as addition, subtraction,multiplication, and division through an interactive and responsive user interface.</div>
+          <div class="proj-tech"><span>HTML</span><span>CSS</span><span>JS</span></div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="page" id="p-contact">
+    <div class="contact-full">
+      <div class="contact-left">
+        <div class="sec-title" style="color:var(--cyan)">Let's Connect</div>
+        <div class="sec-line" style="background:linear-gradient(90deg,var(--cyan),var(--purple));margin-bottom:24px;"></div>
+        <p class="contact-desc">I'm always open to discussing new projects, creative ideas, or opportunities. Drop a message and I'll get back to you within 24 hours.</p>
+
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <div>
+              <div class="info-label">Location</div>
+              <div class="info-val">chennai,TN</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="email-wrap">
+              <span class="info-icon">✉️</span>
+              <div>
+                <div class="info-label">Email</div>
+                <div class="info-val" id="email-reveal" style="cursor:pointer;color:var(--cyan)">Hover to reveal</div>
+              </div>
+              <div class="email-tooltip" id="email-tooltip">
+                <div class="tip-label">✉ Contact</div>
+                <div class="tip-email">kabilanramachandiran2007@gmail.com</div>
+                <div class="tip-copy">Click tooltip to copy</div>
+                <div class="tip-copied" id="tip-copied">✓ Copied!</div>
+              </div>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🕐</span>
+            <div>
+              <div class="info-label">Response Time</div>
+              <div class="info-val">Within 24 hours</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="social-row">
+          <a class="glow-btn cyan" href="https://github.com/kabilan-r07" target="_blank" style="padding:10px 18px;font-size:.72rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.3 9.42 7.88 10.95.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.38-3.88-1.38-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97.005 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.07.78 2.15v3.19c0 .31.21.67.8.56C20.71 21.41 24 17.1 24 12 24 5.65 18.85.5 12 .5z"/></svg>
+            GitHub
+          </a>
+          <a class="glow-btn purple" href="https://www.linkedin.com/in/kabilan-ramachandiran-ab70703a8/" target="_blank" style="padding:10px 18px;font-size:.72rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM3.56 20.45h3.55V9H3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="contact-right">
+        <div class="cf-card">
+          <div class="cf-header">Send a Message</div>
+
+          <div class="cf-row">
+            <div class="cf-field">
+              <label class="cf-label">Your Name</label>
+              <input class="cf-input" id="cf-name" type="text" placeholder="John Doe" autocomplete="off">
+              <span class="cf-err" id="err-name"></span>
+            </div>
+            <div class="cf-field">
+              <label class="cf-label">Your Email</label>
+              <input class="cf-input" id="cf-email" type="email" placeholder="john@example.com" autocomplete="off">
+              <span class="cf-err" id="err-email"></span>
+            </div>
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label">Subject</label>
+            <input class="cf-input" id="cf-subject" type="text" placeholder="Project Inquiry / Collaboration / Hello 👋" autocomplete="off">
+            <span class="cf-err" id="err-subject"></span>
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label">Message</label>
+            <textarea class="cf-input cf-textarea" id="cf-message" placeholder="Tell me about your project, idea, or just say hi..."></textarea>
+            <span class="cf-err" id="err-msg"></span>
+          </div>
+
+          <button class="cf-submit" id="cf-submit" onclick="sendMessage()">
+            <span id="cf-btn-text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send Message
+            </span>
+            <span id="cf-btn-loading" style="display:none">
+              <span class="cf-spinner"></span> Sending...
+            </span>
+          </button>
+
+          <div class="cf-success" id="cf-success">
+            <span>🎉</span>
+            <div>
+              <strong>Message sent!</strong>
+              <p>Thanks for reaching out. I'll reply within 24 hours.</p>
+            </div>
+          </div>
+
+          <div class="cf-note">
+            ⚡ Powered by <a href="https://emailjs.com" target="_blank" style="color:var(--cyan)">EmailJS</a> — messages go directly to my inbox.
+            <br>Replace the keys below with your own EmailJS credentials.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pages-wrap -->
+
+<!-- Page dots -->
+<div class="page-dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot" onclick="goTo(5)"></div>
+</div>
+
+<script>
+/* ── NAVIGATION ── */
+let current = 0;
+const pages  = document.getElementById('pages');
+const navBtns = document.querySelectorAll('.nav-btn');
+const dots   = document.querySelectorAll('.dot');
+
+function goTo(i) {
+  current = i;
+  pages.style.transform = `translateX(-${i * 100}vw)`;
+  navBtns.forEach((b,idx) => b.classList.toggle('active', idx===i));
+  dots.forEach((d,idx) => d.classList.toggle('active', idx===i));
+}
+
+/* ── KEYBOARD NAV ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' && current < 5) goTo(current+1);
+  if (e.key === 'ArrowLeft'  && current > 0) goTo(current-1);
+});
+
+/* ── TOUCH SWIPE ── */
+let tx = 0;
+document.addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (dx < -60 && current < 5) goTo(current+1);
+  if (dx >  60 && current > 0) goTo(current-1);
+}, {passive:true});
+
+/* ── NAME ANIMATION ── */
+const FIRST = 'KABIL';
+const FULL  = "I'm Kabilan R";
+const display = document.getElementById('name-display');
+const homeSub = document.getElementById('home-sub');
+const homeCta = document.getElementById('home-cta');
+const logo     = document.getElementById('logo');
+const corner   = document.getElementById('corner-name');
+
+function spawnLetters(text, delay=0) {
+  display.innerHTML = '';
+  return new Promise(res => {
+    [...text].forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.style.animationDelay = `${delay + i * 80}ms`;
+      display.appendChild(span);
+    });
+    setTimeout(res, delay + text.length*80 + 300);
+  });
+}
+
+async function runIntro() {
+  await new Promise(r => setTimeout(r, 400));
+
+  // 1) type first name letter by letter
+  await spawnLetters(FIRST, 0);
+  await new Promise(r => setTimeout(r, 600));
+
+  // 2) expand to full name
+  await spawnLetters(FULL, 0);
+  await new Promise(r => setTimeout(r, 1000));
+
+  // 3) show sub + cta
+  homeSub.classList.add('show');
+  homeCta.classList.add('show');
+
+  // 4) shrink name to corner
+  await new Promise(r => setTimeout(r, 1200));
+  display.style.transition = 'all 1s cubic-bezier(.77,0,.175,1)';
+  display.style.fontSize = '0.8rem';
+  display.style.letterSpacing = '3px';
+  display.style.opacity = '0';
+
+  await new Promise(r => setTimeout(r, 900));
+  display.style.display = 'none';
+
+  // 5) show corner name + logo
+  corner.classList.add('visible');
+  logo.classList.add('visible');
+}
+
+runIntro();
+
+/* ── EMAILJS CONFIG — replace these 3 values ── */
+const EMAILJS_PUBLIC_KEY  = 'vaWVNcpYMR0klBVIF';
+const EMAILJS_SERVICE_ID  = 'service_7md70tf';
+const EMAILJS_TEMPLATE_ID = 'template_1wqx27e';
+
+/* Load EmailJS SDK */
+(function(){
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  s.onload = () => emailjs.init(EMAILJS_PUBLIC_KEY);
+  document.head.appendChild(s);
+})();
+
+function validate() {
+  let ok = true;
+  const fields = [
+    { id: 'cf-name',    err: 'err-name',    msg: 'Name is required.' },
+    { id: 'cf-subject', err: 'err-subject', msg: 'Subject is required.' },
+    { id: 'cf-message', err: 'err-msg',     msg: 'Message cannot be empty.' },
+  ];
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const errEl = document.getElementById(f.err);
+    if (!el.value.trim()) {
+      errEl.textContent = f.msg; el.classList.add('error'); ok = false;
+    } else { errEl.textContent = ''; el.classList.remove('error'); }
+  });
+  // email validation
+  const em = document.getElementById('cf-email');
+  const emErr = document.getElementById('err-email');
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim());
+  if (!em.value.trim()) {
+    emErr.textContent = 'Email is required.'; em.classList.add('error'); ok = false;
+  } else if (!emailOk) {
+    emErr.textContent = 'Enter a valid email.'; em.classList.add('error'); ok = false;
+  } else { emErr.textContent = ''; em.classList.remove('error'); }
+  return ok;
+}
+
+function sendMessage() {
+  if (!validate()) return;
+  const btn     = document.getElementById('cf-submit');
+  const btnText = document.getElementById('cf-btn-text');
+  const btnLoad = document.getElementById('cf-btn-loading');
+  const success = document.getElementById('cf-success');
+
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnLoad.style.display = 'flex';
+
+  const params = {
+    name:      document.getElementById('cf-name').value.trim(),
+    email:     document.getElementById('cf-email').value.trim(),
+    title:     document.getElementById('cf-subject').value.trim(),
+    message:   document.getElementById('cf-message').value.trim(),
+    reply_to:  document.getElementById('cf-email').value.trim(),
+  };
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+    .then(() => {
+      btnLoad.style.display = 'none';
+      success.classList.add('show');
+      ['cf-name','cf-email','cf-subject','cf-message'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    })
+    .catch(err => {
+      btnLoad.style.display = 'none';
+      btnText.style.display = 'flex';
+      btn.disabled = false;
+      alert('Failed to send: ' + (err.text || 'Check your EmailJS keys.'));
+    });
+}
+
+/* ── EMAIL TOOLTIP COPY ── */
+const emailTooltip = document.getElementById('email-tooltip');
+const tipCopied    = document.getElementById('tip-copied');
+const EMAIL        = 'alex@example.com';
+
+emailTooltip.addEventListener('click', () => {
+  navigator.clipboard.writeText(EMAIL).then(() => {
+    tipCopied.classList.add('show');
+    setTimeout(() => tipCopied.classList.remove('show'), 2000);
+  }).catch(() => {
+    // Fallback for browsers without clipboard API
+    const tmp = document.createElement('textarea');
+    tmp.value = EMAIL; document.body.appendChild(tmp);
+    tmp.select(); document.execCommand('copy');
+    document.body.removeChild(tmp);
+    tipCopied.classList.add('show');
+    setTimeout(() => tipCopied.classList.remove('show'), 2000);
+  });
+});
+
+/* ── PARTICLES ── */
+const colors = ['#00f5ff','#a855f7','#f472b6','#00ff88'];
+const wrap = document.getElementById('particles');
+
+for (let i = 0; i < 55; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 3 + 1;
+  const color = colors[Math.floor(Math.random()*colors.length)];
+  p.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    background:${color};
+    box-shadow: 0 0 6px ${color};
+    opacity:${Math.random()*0.6+0.2};
+    animation-duration:${Math.random()*18+8}s;
+    animation-delay:${Math.random()*10}s;
+  `;
+  wrap.appendChild(p);
+}
+</script>
+</body>
+</html>
