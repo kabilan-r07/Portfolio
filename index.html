@@ -947,6 +947,8 @@ function sendMessage() {
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
     .then(() => {
       btnLoad.style.display = 'none';
+      btnText.style.display = 'flex';
+      btn.disabled = false;
       success.classList.add('show');
       ['cf-name','cf-email','cf-subject','cf-message'].forEach(id => {
         document.getElementById(id).value = '';
