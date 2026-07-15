@@ -17,12 +17,14 @@
     --purple: #a855f7;
     --pink: #f472b6;
     --green: #00ff88;
+   --yellow: #ffee00; 
     --text: #e2e8f0;
     --muted: #64748b;
     --glow-cyan: 0 0 20px #00f5ff55, 0 0 40px #00f5ff22;
     --glow-purple: 0 0 20px #a855f755, 0 0 40px #a855f722;
     --glow-pink: 0 0 20px #f472b655, 0 0 40px #f472b622;
     --glow-green: 0 0 20px #00ff8855, 0 0 40px #00ff8822;
+   --glow-yellow: 0 0 20px #ffee00, 0 0 40px #ffee0080;
   }
 
   html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
@@ -166,7 +168,10 @@
   .glow-btn.purple{ color: var(--purple); border-color: var(--purple); background: #a855f70d; }
   .glow-btn.pink  { color: var(--pink);   border-color: var(--pink);   background: #f472b60d; }
   .glow-btn.green { color: var(--green);  border-color: var(--green);  background: #00ff880d; }
+  .glow-btn.yellow { color: var(--yellow); border-color: var(--yellow); background: #ffee000d; }
 
+ 
+  .glow-btn.yellow:hover { box-shadow: var(--glow-yellow); transform: translateY(-12px) scale(1.04); background: #ffee001a; }
   .glow-btn.cyan:hover   { box-shadow: var(--glow-cyan);   transform: translateY(-12px) scale(1.04); background: #00f5ff1a; }
   .glow-btn.purple:hover { box-shadow: var(--glow-purple); transform: translateY(-12px) scale(1.04); background: #a855f71a; }
   .glow-btn.pink:hover   { box-shadow: var(--glow-pink);   transform: translateY(-12px) scale(1.04); background: #f472b61a; }
@@ -609,6 +614,7 @@
         <button class="glow-btn cyan" onclick="goTo(4)">&#9654; View Work</button>
         <button class="glow-btn purple" onclick="goTo(1)">&#10022; About Me</button>
         <button class="glow-btn pink" onclick="goTo(5)">&#9993; Contact</button>
+        <a href="Kabilan_R_Resume.pdf" download class="glow-btn yellow">Download Resume</a>
       </div>
     </div>
   </div>
