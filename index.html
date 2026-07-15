@@ -146,6 +146,21 @@
   .home-cta.show { opacity: 1; }
 
   /* ── FLOATING GLOW BUTTONS ── */
+ .home-profile-pic {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  box-shadow: var(--glow-cyan);
+  margin-bottom: 8px;
+  opacity: 0;
+  transition: opacity .6s;
+}
+.home-profile-pic.show {
+  opacity: 1;
+  animation: float 4s ease-in-out infinite;
+}
   .glow-btn {
     font-family: 'Space Mono', monospace;
     font-size: .8rem; letter-spacing: 2px;
@@ -608,6 +623,7 @@
   <!-- HOME -->
   <div class="page" id="p-home">
     <div class="home-inner">
+     <img src="kabilan.jpeg" class="home-profile-pic" id="home-pic" alt="Kabilan R">
       <div id="name-display"></div>
       <p class="home-sub" id="home-sub">FULL STACK DEVELOPER &nbsp;·&nbsp;</p>
       <div class="home-cta" id="home-cta">
@@ -654,6 +670,7 @@
         <div class="edu-year">2026 – Completed</div>
         <div class="edu-degree">Full Stack Development Certification</div>
         <div class="edu-school">IBM Organization</div>
+       <div class="proj-demo"><span><a href="fullstack.pdf" target="_blank">view certificate</a></span></div>
       </div>
       
     </div>
@@ -892,7 +909,7 @@ async function runIntro() {
   // 3) show sub + cta
   homeSub.classList.add('show');
   homeCta.classList.add('show');
-
+  document.getElementById('home-pic').classList.add('show');
   // 4) shrink name to corner
   await new Promise(r => setTimeout(r, 1200));
   display.style.transition = 'all 1s cubic-bezier(.77,0,.175,1)';
